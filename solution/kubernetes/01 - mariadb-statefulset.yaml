@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cs3219-db
+  namespace: cs3219
+spec:
+  serviceName: cs3219-db
+  selector:
+    matchLabels:
+      app: cs3219-db
+  template:
+    metadata:
+      labels:
+        app: cs3219-db
+    spec:
+      containers:
+        - name: cs3219-db
+          image: cs3219/mariadb:1.0.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+            - name: MYSQL_DATABASE
+              value: cs3219
+          ports:
+            - containerPort: 3306
+              name: cs3219-db
+## This portion is not tested. Please use it with care
+#          volumeMounts:
+#            - mountPath: /var/lib/mysql
+#              name: mysql-persistent-storage
+#  volumeClaimTemplates:
+#    - metadata:
+#        name: mysql-persistent-storage
+#        labels:
+#          app: local
+#      spec:
+#        accessModes: ["ReadWriteOnce"]
+#        resources:
+#          requests:
+#            storage: 100Mi
+#          volumeMounts:
+#            - mountPath: /var/lib/mysql
+#              name: mysql-persistent-storage
+#      volumes:
+#        - name: mysql-persistent-storage
+#          persistentVolumeClaim:
+#            claimName: mysql-pv-claim
